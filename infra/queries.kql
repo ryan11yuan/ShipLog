@@ -1,0 +1,17 @@
+// ShipLog: failed requests, error logs and failed deploys from the last day, newest first.
+// Paste into the portal (Log Analytics workspace > Logs), or run:
+//   az monitor log-analytics query -w <workspace customerId> --analytics-query "@infra/queries.kql"
+ContainerAppConsoleLogs_CL
+| where TimeGenerated > ago(1d)
+| where ContainerAppName_s == "ca-shiplog-dev"
+| extend log = parse_json(Log_s) // each stdout line is one JSON object (see JsonFormatter in app/main.py)
+| where log.level == "ERROR" // 5xx responses and unhandled exceptions
+    or (log.message == "deploy recorded" and log.status == "failure") // failed pipeline runs
+| project TimeGenerated,
+          message = tostring(log.message),
+          status = tostring(log.status),
+          path = tostring(log.path),
+          commit_sha = tostring(log.commit_sha),
+          exception = tostring(log.exception),
+          revision = RevisionName_s
+| order by TimeGenerated desc

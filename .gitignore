@@ -1,0 +1,12 @@
+# Python
+.venv/
+__pycache__/
+.pytest_cache/
+
+# Terraform: downloaded providers, state (contains the API key in plain text),
+# and real variable values (subscription ID, email)
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+terraform.tfvars

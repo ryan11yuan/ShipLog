@@ -1,0 +1,18 @@
+# Local Jenkins for ShipLog.
+#   Start: docker compose -f jenkins/docker-compose.yml up -d --build
+#   Stop:  docker compose -f jenkins/docker-compose.yml down       (add -v to delete all Jenkins data)
+services:
+  jenkins:
+    build: .
+    container_name: shiplog-jenkins
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8080:8080" # localhost only: other devices on your network can't reach it
+    volumes:
+      - jenkins_home:/var/jenkins_home # jobs, credentials and build history survive restarts
+      - /var/run/docker.sock:/var/run/docker.sock # builds run on the host's Docker engine
+    group_add:
+      - "0" # the socket belongs to group root (GID 0), so the jenkins user needs that group
+
+volumes:
+  jenkins_home:

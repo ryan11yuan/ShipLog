@@ -1,0 +1,4 @@
+# Copy to terraform.tfvars (gitignored) and fill in real values
+subscription_id = "00000000-0000-0000-0000-000000000000" # az account show --query id -o tsv
+owner           = "your-name"
+alert_email     = "you@example.com"
